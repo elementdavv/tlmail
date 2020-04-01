@@ -298,7 +298,7 @@ if __name__ == '__main__':
             if not relay_ipfile:
                 log.warning('please set relay_ip or relay_ipfile in config file')
                 sys.exit()
-            f = open(, 'r')
+            f = open(relay_ipfile, 'r')
             relay_ip = f.readline()
             f.close()
     relay_bind = config.get('relay', 'bind', fallback = '0.0.0.0')
