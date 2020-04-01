@@ -147,8 +147,8 @@ class MailProxyHandler:
     # generate received
     def received(self, emai, crlf):
         mid = []
-        mid.append('Received: from timelegend.net (unknown [127.0.0.1])')
-        mid.append('by smtp.timelegend.net (ESMTP) with SMTP id ' + self.ranstr(12))
+        mid.append('Received: from ' + self._domain + ' (unknown [127.0.0.1])')
+        mid.append('by smtp.' + self._domain + ' (ESMTP) with SMTP id ' + self.ranstr(12))
         mid.append('for <' + emai + '>; ' + self.curtime())
         return (crlf.decode() + '\t').join(mid) 
         
