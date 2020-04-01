@@ -73,11 +73,14 @@ class MailProxyHandler:
 
     async def handle_DATA(self, server, session, envelope):
         if __SERVER_MODE__:
+        
+            # all transmations done at server
             if not self.parse(envelope):
                 return '250 OK'
 
         else:
-            #e = self.rtoe(envelope.rcpt_tos[0])
+            # relay just redirect mail intact
+            # e = self.rtoe(envelope.rcpt_tos[0])
             self._mx = self.exchanger(envelope.rcpt_tos[0].split('@')[1])
             if not self._mx:
                 log.warning('bad outbound address: ' + envelope.rcpt_tos[0])
@@ -122,21 +125,26 @@ class MailProxyHandler:
             refused = envelope.rcpt_tos
 
         return refused
-
+    
+    # from mail line get mail address
     def rtoe(self, r):
         e = re.findall(EMAILWRAP, r)
         return e[0] if e else r
-        
+    
+    # query MX record
     def exchanger(self, domain):
         mx = dns.resolver.query(domain, 'MX')
         return str(mx[0].exchange).rstrip('.') if mx else None
-
+    
+    # generate dkim
     def dkim(self):
         return ''
         
+    # genereate messageid
     def messageid(self):
         return 'Message-ID: <_' + self.ranstr(36) + '@' + self._domain + '>'
         
+    # generate received
     def received(self, emai, crlf):
         mid = []
         mid.append('Received: from timelegend.net (unknown [127.0.0.1])')
@@ -144,12 +152,15 @@ class MailProxyHandler:
         mid.append('for <' + emai + '>; ' + self.curtime())
         return (crlf.decode() + '\t').join(mid) 
         
+    # generate current time string
     def curtime(self):
         return datetime.now().strftime('%a, %d %b %Y %H:%M:%S ') + time.strftime('%z') + ' (' + time.tzname[0] + ')'
         
+    # genereate random string
     def ranstr(self, n):
         return ''.join(random.sample(string.ascii_letters + string.digits, n))
         
+    # repackage mail message
     def parse(self, envelope):
         if isinstance(envelope.content, str):
             content = envelope.original_content
@@ -158,11 +169,11 @@ class MailProxyHandler:
 
         lines = content.splitlines(keepends=True)
         
-        # change following fields
+        # search following fields line number
         marks = {
-            #'xmailer':         {'tag': XMAILER,       'no': -1},
-            #'from':            {'tag': FROM,          'no': -1},
-            #'envelope_from':   {'tag': ENVELOPEFROM,  'no': -1},
+            # 'xmailer':         {'tag': XMAILER,       'no': -1},
+            # 'from':            {'tag': FROM,          'no': -1},
+            # 'envelope_from':   {'tag': ENVELOPEFROM,  'no': -1},
             'to':              {'tag': TO,            'no': -1},
             'subject':         {'tag': SUBJECT,       'no': -1},
         }
@@ -179,6 +190,7 @@ class MailProxyHandler:
                         break
             i += 1
 
+        # construct envelope subject/from/tos
         subjectline = lines[marks['subject']['no']]
         subjectenc = re.search(SUBJECTTAG, subjectline)
         if subjectenc:
@@ -206,20 +218,21 @@ class MailProxyHandler:
                 envelope.rcpt_tos = re.findall(ADDRESSWRAP.decode(), subjectline.decode())
                 linesubject = re.sub(ADDRESSWRAP, b'', subjectline)
 
+            # handle subject error
             if len(envelope.rcpt_tos) == 0:
                 log.warning('bad outbound address: ')
                 log.warning(ds1.decode() if subjectenc else subjectline.decode())
                 return False
                 
+        # make header
+        headers = []
+
         linexmailer = XMAILER + __X_MAILER__ + CRLF
         linefrom = lines[marks['to']['no']].replace(TO, FROM)
         lineenvelopefrom = linefrom.replace(FROM, ENVELOPEFROM)
         lineto = TO + envelope.rcpt_tos[0].encode() + CRLF
-        # end change fields        
         
-        # make header
-        headers = []
-        #headers.append(self.dkim().encode() + CRLF)
+        # headers.append(self.dkim().encode() + CRLF)
         headers.append(self.messageid().encode() + CRLF)
         headers.append(self.received(envelope.rcpt_tos[0], CRLF).encode() + CRLF)
         headers.append(linexmailer)
@@ -230,7 +243,7 @@ class MailProxyHandler:
         headers.append(MIMEVERSION + CRLF)
         headers.append(DATEE + self.curtime().encode() + CRLF)
         
-        #header plus content
+        # header plus content
         tags = (CTE, CT)
         sts = (ST1, ST2)
         cont = False
@@ -258,6 +271,7 @@ class MailProxyHandler:
                     cont = True
                     break
                     
+        # envelope content
         self._content = EMPTYBYTES.join(headers)
         return True
         
