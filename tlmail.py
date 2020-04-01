@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 
-import configparser
-import logging
-import os
-import smtplib
-import sys
-from time import sleep
-from aiosmtpd.controller import Controller
-from email.header import Header, decode_header, make_header
-import dns.resolver
-import re
-import string
-import random
-from datetime import datetime
+import os, sys, logging, configparser
+import string, re, random
 import time
+from datetime import datetime
+import smtplib
+import dns.resolver
+from email.header import decode_header, make_header
+from aiosmtpd.controller import Controller
 
 __PROJECTNAME_	= 'tlmail'
 
@@ -42,7 +36,6 @@ logfh = logging.FileHandler(__PROJECTNAME_ + '.log')
 logfmt = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 logfh.setFormatter(logfmt)
 log.addHandler(logfh)
-
 
 class MailProxyHandler:
     def __init__(self, domain, host, user, port, relay_ip, relay_port):
@@ -315,4 +308,4 @@ if __name__ == '__main__':
         log.info('start relaying at port %s', relay_port)
 
     while controller.loop.is_running():
-        sleep(0.2)
+        time.sleep(0.2)
