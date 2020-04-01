@@ -283,17 +283,22 @@ if __name__ == '__main__':
         config_path = os.path.join(sys.path[0], __PROJECTNAME_ + '.ini')
 
     if not os.path.exists(config_path):
-        raise Exception("config file not found: {}".format(config_path))
-
+        log.warning('no config file')
+        sys.exit()
+        
     config = configparser.ConfigParser()
     config.read(config_path)
     
     __SERVER_MODE__ = config.getboolean('general', 'servermode')
     domain = config.get('server', 'domain')
-    relay_ip = config.get('relay', 'ip')
-    if not relay_ip:
-        if __SERVER_MODE__:
-            f = open(config.get('relay', 'ipfile'), 'r')
+    if __SERVER_MODE__:
+        relay_ip = config.get('server', 'relay_ip')
+        if not relay_ip:
+            relay_ipfile = config.get('server', 'relay_ipfile')
+            if not relay_ipfile:
+                log.warning('please set relay_ip or relay_ipfile in config file')
+                sys.exit()
+            f = open(, 'r')
             relay_ip = f.readline()
             f.close()
     relay_bind = config.get('relay', 'bind', fallback = '0.0.0.0')
