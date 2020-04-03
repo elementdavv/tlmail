@@ -44,7 +44,7 @@ class MailProxyHandler:
         self._domain = domain
         self._host = host
         self._user = user
-        self._use_dkim = use_dkim,
+        self._use_dkim = use_dkim
         self._port = port
         self._dkim_selector = dkim_selector
         self._dkim_key = dkim_key
