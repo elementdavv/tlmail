@@ -6,7 +6,7 @@ For sending mail, from your public mail server, send a mail to an address of you
 For receiving mail, the replied mail also arrives at your server first, then at relay, and arrives at your public mail server at last.
 
 # Prerequisite
-* a domain name with MX record configured
+* a domain name with MX record configured(optional DKIM TXT)
 * a cloud host to run server
 * a adsl at home to run relay
 * a public mail account
@@ -17,17 +17,17 @@ At both server and relay, run:
 ```
 git clone https://github.com/lakedai/tlmail
 cd tlmail
-pip3 install dnspython aiosmtpd
+pip3 install dnspython aiosmtpd dkimpy
 ```
 2. At server  
-edit the config file `tlmail.ini` to server mode  
+edit the config file `tlmail.ini`
 open port `25`  
 run:  
 ```
 sudo python3 tlmail.py &
 ```
 3. At relay  
-edit the config file `tlmail.ini` to relay mode  
+edit the config file `tlmail.ini`
 open port `2525`  
 run:  
 ```
