@@ -30,14 +30,14 @@ pip3 install dnspython aiosmtpd dkimpy
 sudo python3 tlmail.py &
 ```
 3. On relay
-edit general, relay and remote section of config file `tlmail.ini`
-open port `2525` of the relay
-run:
+- edit general, relay and remote section of config file `tlmail.ini`
+- open port `2525` of the relay
+- run:
 ```
 python3 tlmail.py &
 ```
 4. Mail operation
-You can send and receive mails from your public mail account.
+- You can send and receive mails from your public mail account.
 When sending a mail:
 - set the `To:` field to the address of your domain
 - sourround the receiver's address with `###` in both sides, and inject it to the `Subject:` field
