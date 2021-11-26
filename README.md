@@ -1,39 +1,40 @@
 # What is tlmail
-Runing a full functional mail service involves sophisticated setup and much maintain efforts. Many cloud providers also do not allow personnal mail services by prohibiting port `25`. This mail relay script will let you own an email address of your personal domain, without runing a whole mail server. You can use the address to communicate with the world. For others, they write to a personal mailbox, instead of a public one like gmail or yahoo mail.
+Runing a full functional mail service involves sophisticated setup and much maintain efforts. Many cloud providers also do not allow personnal mail services by blocking port `25`. This mail relay will let you own an email address of your domain, without runing a mail server. You can use the address to communicate with the world.
 
 # How it works
-For sending mail, from your public mail server, send a mail to an address of your ponsonal domain. That domain must be configured to target at your server by dns MX record. The server runs the script in server mode, it receives the mail and redirects it to your relay. The relay runs the script in relay mode, it then redirects the mail to the mail server of the real receiver directly.  
-For receiving mail, the replied mail also arrives at your server first, then at relay, and arrives at your public mail server at last.
+First you need a cloud host configured as a server, which your domain targets to. Next you need a local host configured as a relay.
+To send mail, send to the address of your domain from your public mail account. The mail will arrives at your server. The server redirects the mail to your relay. At last the relay redirects the mail to the targeting mail server.
+To receive mail, the replied mail also arrives at your server first, then at your relay, finally at your public mail account.
 
 # Prerequisite
-* a domain name with MX record configured(optional DKIM TXT)
-* a cloud host to run server
-* a adsl at home to run relay
-* a public mail account
+* an account from public mail server, eg. gmail.com
+* a cloud host service, eg. google cloud
+* a domain name with MX record configured(optional DKIM TXT), targeting at the cloud host
+* your local network
 
 # Usage
-1. Install  
-At both server and relay, run:  
+1. On both server and relay
 ```
-git clone https://github.com/lakedai/tlmail
+git clone https://github.com/lakedai/tlmail.git
 cd tlmail
 pip3 install dnspython aiosmtpd dkimpy
 ```
-2. At server  
-edit the config file `tlmail.ini`
-open port `25`  
-run:  
+2. On server
+- edit general and server sections of config file `tlmail.ini`
+- open port `25` of the server
+- run:
 ```
 sudo python3 tlmail.py &
 ```
-3. At relay  
-edit the config file `tlmail.ini`
-open port `2525`  
-run:  
+3. On relay
+edit general, relay and remote section of config file `tlmail.ini`
+open port `2525` of the relay
+run:
 ```
 python3 tlmail.py &
 ```
-4. Mail operation  
-To send/receive mails, login to your public mail account.  
-When sending a mail, set the `To:` field to an address of your domain, and embed the real receiver's address surrounded with `###` in both sides to the `Subject:` field.  
-After receivers reply, you can receive and read them at the same place.  
+4. Mail operation
+You can send and receive mails from your public mail account.
+When sending a mail:
+- set the `To:` field to the address of your domain
+- sourround the receiver's address with `###` in both sides, and inject it to the `Subject:` field
