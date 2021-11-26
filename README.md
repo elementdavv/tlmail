@@ -18,7 +18,7 @@ Runing a full functional mail service involves sophisticated setup and much main
 ## Usage
 1. On both server and relay
 ```
-git clone https://github.com/lakedai/tlmail.git
+git clone https://github.com/elementdavv/tlmail.git
 cd tlmail
 pip3 install dnspython aiosmtpd dkimpy
 ```
